@@ -32,6 +32,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
 | [docs/api/warehouse.md](docs/api/warehouse.md) | warehouse-service endpoints, stock model, configuration |
+| [docs/api/tracking.md](docs/api/tracking.md) | tracking-service endpoints, statuses, configuration |
 | [docs/repo-setup.md](docs/repo-setup.md) | GitHub settings runbook: protection, labels, board |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branching, commits, pull requests |
 
@@ -65,7 +66,7 @@ curl http://localhost:8082/actuator/health
 
 Each service reads its port from `SERVER_PORT`; defaults are in the Services table.
 
-warehouse-service needs PostgreSQL. Until Docker Compose is added, follow "Running alone" in [docs/api/warehouse.md](docs/api/warehouse.md). The tests do not need a database server.
+warehouse-service and tracking-service need PostgreSQL. Until Docker Compose is added, follow "Running alone" in [docs/api/warehouse.md](docs/api/warehouse.md) and [docs/api/tracking.md](docs/api/tracking.md). The tests do not need a database server.
 
 ### Troubleshooting on Windows
 
@@ -83,7 +84,7 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | Repository, governance, documentation | done |
 | Application skeleton | done |
 | warehouse-service | done |
-| tracking-service | planned |
+| tracking-service | done |
 | delivery-service | planned |
 | order-service | planned |
 | api-gateway | planned |

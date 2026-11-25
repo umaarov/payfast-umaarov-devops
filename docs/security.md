@@ -22,8 +22,10 @@
 | Dependabot for Maven | `.github/dependabot.yml` | done |
 | API key required at the gateway | api-gateway | planned |
 | `/internal/**` not routed by the gateway | api-gateway | planned |
-| Input validation on every request body | all services | in progress: warehouse-service done |
-| Database credentials from environment only | all services | in progress: warehouse-service done |
+| Input validation on every request body | all services | in progress: warehouse, tracking done |
+| Database credentials from environment only | all services | in progress: warehouse, tracking done |
+| Public tracking timeline exposes no personal data or internal ids | tracking-service | done |
+| Tracking events are append-only | tracking-service | done |
 | No delete endpoints for stock and reservations | warehouse-service | done |
 | Database check constraints repeat business invariants | warehouse-service | done |
 | Containers run as a non-root user | Dockerfiles | planned |
