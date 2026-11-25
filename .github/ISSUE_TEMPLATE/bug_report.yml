@@ -1,0 +1,50 @@
+name: Bug report
+description: Something behaves differently from what is documented
+title: "[Bug] "
+labels: ["type:bug"]
+body:
+  - type: dropdown
+    id: service
+    attributes:
+      label: Service
+      options:
+        - order-service
+        - warehouse-service
+        - delivery-service
+        - tracking-service
+        - api-gateway
+        - infrastructure
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. POST /api/orders with ...
+        2. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include status codes, response bodies, and relevant log lines. Remove any secrets first.
+    validations:
+      required: true
+  - type: dropdown
+    id: data-risk
+    attributes:
+      label: Can this lose or corrupt data?
+      options:
+        - "No"
+        - "Yes"
+        - "Unknown"
+    validations:
+      required: true

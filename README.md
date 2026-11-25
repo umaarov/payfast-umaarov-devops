@@ -1,0 +1,53 @@
+# Logistics and Courier Platform
+
+Microservice platform for a logistics and courier company. Customers create delivery orders, the warehouse reserves stock, couriers are assigned and deliver, and parcels are tracked by tracking number.
+
+Repository: `payfast-umaarov-devops`
+
+## Services
+
+| Service | Responsibility | Port |
+| --- | --- | --- |
+| api-gateway | Single public entry point, routing, API-key protection | 8080 |
+| order-service | Order lifecycle and orchestration of the order flow | 8081 |
+| warehouse-service | Inventory, stock reservations | 8082 |
+| delivery-service | Couriers, delivery assignment and delivery status | 8083 |
+| tracking-service | Tracking events and public parcel timeline | 8084 |
+
+## Stack
+
+- Java 21, Spring Boot 3.5, Spring Cloud Gateway
+- PostgreSQL with one database per service, Flyway migrations
+- Maven multi-module build
+- Docker, Docker Compose, GitHub Actions, Kubernetes
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [docs/team-charter.md](docs/team-charter.md) | Roles, working agreements, definition of done |
+| [docs/access.md](docs/access.md) | Who has access to what and how changes are approved |
+| [docs/decisions.md](docs/decisions.md) | Architecture decision records |
+| [docs/security.md](docs/security.md) | Secret handling and security controls |
+| [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
+| [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Branching, commits, pull requests |
+
+## Run steps
+
+Added together with the application skeleton.
+
+## Project status
+
+| Stage | Status |
+| --- | --- |
+| Repository, governance, documentation | in progress |
+| Application skeleton | planned |
+| warehouse-service | planned |
+| tracking-service | planned |
+| delivery-service | planned |
+| order-service | planned |
+| api-gateway | planned |
+| Docker and Compose | planned |
+| CI/CD | planned |
+| Kubernetes | planned |

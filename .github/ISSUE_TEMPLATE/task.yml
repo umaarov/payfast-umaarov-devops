@@ -1,0 +1,44 @@
+name: Task
+description: A unit of planned work that belongs to a sprint
+title: "[Task] "
+labels: ["type:chore"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: Story
+      description: As a <role>, I want <capability>, so that <benefit>.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: A checklist that makes the task verifiably done.
+      placeholder: |
+        - [ ] criterion one
+        - [ ] criterion two
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Owning role
+      options:
+        - Tech Lead
+        - Product Owner / Scrum Master
+        - QA & Code Review Lead
+        - DevOps / Platform Engineer
+        - Technical Writer & Security Champion
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 - blocks the sprint goal
+        - P1 - important
+        - P2 - nice to have
+    validations:
+      required: true
