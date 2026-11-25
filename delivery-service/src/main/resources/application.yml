@@ -4,6 +4,26 @@ server:
 spring:
   application:
     name: delivery-service
+  datasource:
+    url: ${DELIVERY_DB_URL:jdbc:postgresql://localhost:5432/delivery}
+    username: ${DELIVERY_DB_USER:delivery}
+    password: ${DELIVERY_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+delivery:
+  downstream:
+    tracking-url: ${TRACKING_SERVICE_URL:http://localhost:8084}
+    order-url: ${ORDER_SERVICE_URL:http://localhost:8081}
+    connect-timeout: 2s
+    read-timeout: 3s
+  outbox:
+    enabled: true
+    interval-ms: 2000
 
 management:
   endpoints:
