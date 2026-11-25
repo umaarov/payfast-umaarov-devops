@@ -1,0 +1,175 @@
+name: logistics
+
+x-java-service: &java-service
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  mem_limit: 512m
+  networks:
+    - backend
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set, run scripts/init-env first}
+      ORDER_DB_PASSWORD: ${ORDER_DB_PASSWORD:?ORDER_DB_PASSWORD is not set, run scripts/init-env first}
+      WAREHOUSE_DB_PASSWORD: ${WAREHOUSE_DB_PASSWORD:?WAREHOUSE_DB_PASSWORD is not set, run scripts/init-env first}
+      DELIVERY_DB_PASSWORD: ${DELIVERY_DB_PASSWORD:?DELIVERY_DB_PASSWORD is not set, run scripts/init-env first}
+      TRACKING_DB_PASSWORD: ${TRACKING_DB_PASSWORD:?TRACKING_DB_PASSWORD is not set, run scripts/init-env first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - backend
+
+  warehouse-service:
+    <<: *java-service
+    build:
+      context: .
+      args:
+        SERVICE: warehouse-service
+    image: logistics/warehouse-service:dev
+    environment:
+      SERVER_PORT: 8080
+      WAREHOUSE_DB_URL: jdbc:postgresql://postgres:5432/warehouse
+      WAREHOUSE_DB_USER: warehouse
+      WAREHOUSE_DB_PASSWORD: ${WAREHOUSE_DB_PASSWORD:?WAREHOUSE_DB_PASSWORD is not set, run scripts/init-env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  tracking-service:
+    <<: *java-service
+    build:
+      context: .
+      args:
+        SERVICE: tracking-service
+    image: logistics/tracking-service:dev
+    environment:
+      SERVER_PORT: 8080
+      TRACKING_DB_URL: jdbc:postgresql://postgres:5432/tracking
+      TRACKING_DB_USER: tracking
+      TRACKING_DB_PASSWORD: ${TRACKING_DB_PASSWORD:?TRACKING_DB_PASSWORD is not set, run scripts/init-env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  delivery-service:
+    <<: *java-service
+    build:
+      context: .
+      args:
+        SERVICE: delivery-service
+    image: logistics/delivery-service:dev
+    environment:
+      SERVER_PORT: 8080
+      DELIVERY_DB_URL: jdbc:postgresql://postgres:5432/delivery
+      DELIVERY_DB_USER: delivery
+      DELIVERY_DB_PASSWORD: ${DELIVERY_DB_PASSWORD:?DELIVERY_DB_PASSWORD is not set, run scripts/init-env first}
+      TRACKING_SERVICE_URL: http://tracking-service:8080
+      ORDER_SERVICE_URL: http://order-service:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      tracking-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  order-service:
+    <<: *java-service
+    build:
+      context: .
+      args:
+        SERVICE: order-service
+    image: logistics/order-service:dev
+    environment:
+      SERVER_PORT: 8080
+      ORDER_DB_URL: jdbc:postgresql://postgres:5432/orders
+      ORDER_DB_USER: orders
+      ORDER_DB_PASSWORD: ${ORDER_DB_PASSWORD:?ORDER_DB_PASSWORD is not set, run scripts/init-env first}
+      WAREHOUSE_SERVICE_URL: http://warehouse-service:8080
+      DELIVERY_SERVICE_URL: http://delivery-service:8080
+      TRACKING_SERVICE_URL: http://tracking-service:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      warehouse-service:
+        condition: service_healthy
+      delivery-service:
+        condition: service_healthy
+      tracking-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  api-gateway:
+    <<: *java-service
+    build:
+      context: .
+      args:
+        SERVICE: api-gateway
+    image: logistics/api-gateway:dev
+    environment:
+      SERVER_PORT: 8080
+      GATEWAY_API_KEYS: ${GATEWAY_API_KEYS:?GATEWAY_API_KEYS is not set, run scripts/init-env first}
+      ORDER_SERVICE_URL: http://order-service:8080
+      WAREHOUSE_SERVICE_URL: http://warehouse-service:8080
+      DELIVERY_SERVICE_URL: http://delivery-service:8080
+      TRACKING_SERVICE_URL: http://tracking-service:8080
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      order-service:
+        condition: service_healthy
+      warehouse-service:
+        condition: service_healthy
+      delivery-service:
+        condition: service_healthy
+      tracking-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+networks:
+  backend:
+
+volumes:
+  postgres-data:

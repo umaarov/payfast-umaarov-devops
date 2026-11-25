@@ -1,0 +1,13 @@
+**/target
+.git
+.github
+.idea
+.vscode
+.env
+.env.*
+!.env.example
+docs
+k8s
+scripts
+*.md
+**/*.iml

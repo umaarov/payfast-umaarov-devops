@@ -36,7 +36,11 @@
 | Tracking events are append-only | tracking-service | done |
 | No delete endpoints for stock and reservations | warehouse-service | done |
 | Database check constraints repeat business invariants | warehouse-service | done |
-| Containers run as a non-root user | Dockerfiles | planned |
+| Containers run as a non-root user | Dockerfile | done |
+| Read-only root filesystem, all capabilities dropped, no-new-privileges, memory limits | docker-compose.yml | done |
+| Only the gateway is published, bound to the loopback interface | docker-compose.yml | done |
+| Compose refuses to start when a secret is missing; secrets are generated randomly into a git-ignored .env | scripts/init-env, docker-compose.yml | done |
+| Each service database has its own role and password, no access for others | docker/postgres/init-databases.sh | done |
 | Secret scan in CI | GitHub Actions | planned |
 | Dependency vulnerability scan in CI | GitHub Actions | planned |
 | Kubernetes Secrets and resource limits | `k8s/` | planned |
