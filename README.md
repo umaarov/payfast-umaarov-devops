@@ -34,6 +34,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/kubernetes.md](docs/kubernetes.md) | Deploying to Kubernetes with Kustomize |
 | [docs/ci-cd.md](docs/ci-cd.md) | Pipelines, required checks, releases |
 | [docs/docker.md](docs/docker.md) | Running the whole platform with Docker Compose |
+| [docs/testing.md](docs/testing.md) | Test levels, the end-to-end smoke test, how to run it, demo script |
 | [docs/api/gateway.md](docs/api/gateway.md) | api-gateway routes, API key, path guard, limits |
 | [docs/api/order.md](docs/api/order.md) | order-service endpoints, order flow, compensation, configuration |
 | [docs/api/warehouse.md](docs/api/warehouse.md) | warehouse-service endpoints, stock model, configuration |
@@ -83,7 +84,7 @@ curl http://localhost:8082/actuator/health
 
 Each service reads its port from `SERVER_PORT`; defaults are in the Services table.
 
-api-gateway needs `GATEWAY_API_KEYS` (see [docs/api/gateway.md](docs/api/gateway.md)); it refuses to start without it. order-service, warehouse-service, tracking-service and delivery-service need PostgreSQL. Until Docker Compose is added, follow "Running alone" in [docs/api/order.md](docs/api/order.md), [docs/api/warehouse.md](docs/api/warehouse.md), [docs/api/tracking.md](docs/api/tracking.md) and [docs/api/delivery.md](docs/api/delivery.md). The tests do not need a database server.
+api-gateway needs `GATEWAY_API_KEYS` (see [docs/api/gateway.md](docs/api/gateway.md)); it refuses to start without it. order-service, warehouse-service, tracking-service and delivery-service need PostgreSQL. To run a single service by hand, follow "Running alone" in [docs/api/order.md](docs/api/order.md), [docs/api/warehouse.md](docs/api/warehouse.md), [docs/api/tracking.md](docs/api/tracking.md) and [docs/api/delivery.md](docs/api/delivery.md). The tests do not need a database server.
 
 ### Troubleshooting on Windows
 
@@ -96,15 +97,11 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 
 ## Project status
 
-| Stage | Status |
-| --- | --- |
-| Repository, governance, documentation | done |
-| Application skeleton | done |
-| warehouse-service | done |
-| tracking-service | done |
-| delivery-service | done |
-| order-service | done |
-| api-gateway | done |
-| Docker and Compose | files written, first run pending |
-| CI/CD | workflows written, first run pending |
-| Kubernetes | manifests written, first deployment pending |
+| Area | Status | How it was verified |
+| --- | --- | --- |
+| Repository, governance, documentation | done | Reviewed through pull requests |
+| warehouse-service, tracking-service, delivery-service, order-service, api-gateway | done | 220 automated tests in `./mvnw verify` |
+| Whole flow across the five services | done | `scripts/smoke-test.sh`, 53 checks, run against the five real services |
+| Docker and Compose | done | `compose-smoke` job in CI builds the images and runs the smoke test on PostgreSQL |
+| CI/CD | done | Workflows run on every pull request and on `main` |
+| Kubernetes | manifests done, not deployed | Rendered and schema-checked in CI; no cluster has run them yet |
