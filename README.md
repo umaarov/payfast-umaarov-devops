@@ -36,14 +36,49 @@ Repository: `payfast-umaarov-devops`
 
 ## Run steps
 
-Added together with the application skeleton.
+Prerequisite: JDK 21. Maven is not required; the Maven Wrapper downloads it.
+
+Build and test every service:
+
+```
+./mvnw -B verify
+```
+
+On Windows:
+
+```
+mvnw.cmd -B verify
+```
+
+Start one service (replace the module name):
+
+```
+./mvnw -pl warehouse-service spring-boot:run
+```
+
+Check that it is alive:
+
+```
+curl http://localhost:8082/actuator/health
+```
+
+Each service reads its port from `SERVER_PORT`; defaults are in the Services table.
+
+### Troubleshooting on Windows
+
+If startup or tests fail with `Unable to establish loopback connection`, the JVM cannot create its selector pipe in the temporary directory (seen when that path is a shortened 8.3 name). Point it at a plain ASCII folder once, then restart the terminal and the IDE:
+
+```
+mkdir C:\Users\Public\jtmp
+setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
+```
 
 ## Project status
 
 | Stage | Status |
 | --- | --- |
 | Repository, governance, documentation | done |
-| Application skeleton | planned |
+| Application skeleton | done |
 | warehouse-service | planned |
 | tracking-service | planned |
 | delivery-service | planned |
