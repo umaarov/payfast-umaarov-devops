@@ -4,9 +4,42 @@ server:
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 2000
+            response-timeout: 10s
+          default-filters:
+            - name: RequestSize
+              args:
+                maxSize: 1MB
+            - SecureHeaders
+          routes:
+            - id: orders
+              uri: ${ORDER_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/orders/**
+            - id: warehouse
+              uri: ${WAREHOUSE_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/warehouse/**
+            - id: delivery
+              uri: ${DELIVERY_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path=/api/delivery/**
+            - id: tracking
+              uri: ${TRACKING_SERVICE_URL:http://localhost:8084}
+              predicates:
+                - Path=/api/tracking/**
+
+gateway:
+  security:
+    api-keys: ${GATEWAY_API_KEYS:}
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health

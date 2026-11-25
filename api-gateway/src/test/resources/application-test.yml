@@ -1,0 +1,3 @@
+gateway:
+  security:
+    api-keys: test-key-aaaaaaaaaaaaaaaa,test-key-bbbbbbbbbbbbbbbb

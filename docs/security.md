@@ -20,8 +20,10 @@
 | GitHub secret scanning and push protection | GitHub settings | to be applied by owner |
 | Dependabot for GitHub Actions | `.github/dependabot.yml` | done |
 | Dependabot for Maven | `.github/dependabot.yml` | done |
-| API key required at the gateway | api-gateway | planned |
-| `/internal/**` not routed by the gateway | api-gateway | planned |
+| API key required at the gateway, fail-closed at startup, constant-time compare, key never forwarded or logged | api-gateway | done |
+| `/internal/**` not routed by the gateway; path traversal and encoded-slash tricks rejected | api-gateway | done |
+| Request size limit, secure response headers, request id on every response | api-gateway | done |
+| Rate limiting of the public tracking endpoint | ingress | planned |
 | Input validation on every request body | all services | in progress: order, warehouse, tracking, delivery done |
 | Database credentials from environment only | all services | in progress: order, warehouse, tracking, delivery done |
 | Recipient name, phone and address never leave delivery-service in events | delivery-service | done |
