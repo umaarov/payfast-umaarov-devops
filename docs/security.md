@@ -41,8 +41,10 @@
 | Only the gateway is published, bound to the loopback interface | docker-compose.yml | done |
 | Compose refuses to start when a secret is missing; secrets are generated randomly into a git-ignored .env | scripts/init-env, docker-compose.yml | done |
 | Each service database has its own role and password, no access for others | docker/postgres/init-databases.sh | done |
-| Secret scan in CI | GitHub Actions | planned |
-| Dependency vulnerability scan in CI | GitHub Actions | planned |
+| Secret scan in CI (tracked .env files, gitleaks over history and tree) | GitHub Actions | done, first run pending |
+| Dependency and image vulnerability scan in CI (Trivy, report only) | GitHub Actions | done, first run pending |
+| Workflows use read-only permissions; publishing uses the built-in token only | GitHub Actions | done |
+| Pull requests need build, secret-scan and compose-smoke to pass | GitHub settings, [repo-setup.md](repo-setup.md) | to be applied by owner |
 | Kubernetes Secrets and resource limits | `k8s/` | planned |
 
 ## Reporting
