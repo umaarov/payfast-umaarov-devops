@@ -31,6 +31,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/security.md](docs/security.md) | Secret handling and security controls |
 | [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
+| [docs/docker.md](docs/docker.md) | Running the whole platform with Docker Compose |
 | [docs/api/gateway.md](docs/api/gateway.md) | api-gateway routes, API key, path guard, limits |
 | [docs/api/order.md](docs/api/order.md) | order-service endpoints, order flow, compensation, configuration |
 | [docs/api/warehouse.md](docs/api/warehouse.md) | warehouse-service endpoints, stock model, configuration |
@@ -40,6 +41,17 @@ Repository: `payfast-umaarov-devops`
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branching, commits, pull requests |
 
 ## Run steps
+
+### Everything with Docker (one command after setup)
+
+```powershell
+.\scripts\init-env.ps1
+docker compose up --build -d
+```
+
+On Linux or macOS use `sh scripts/init-env.sh`. The gateway listens on `http://localhost:8080`. Details, hardening and troubleshooting are in [docs/docker.md](docs/docker.md).
+
+### Without Docker
 
 Prerequisite: JDK 21. Maven is not required; the Maven Wrapper downloads it.
 
@@ -91,6 +103,6 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | delivery-service | done |
 | order-service | done |
 | api-gateway | done |
-| Docker and Compose | planned |
+| Docker and Compose | files written, first run pending |
 | CI/CD | planned |
 | Kubernetes | planned |

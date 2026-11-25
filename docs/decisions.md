@@ -139,3 +139,13 @@ Context: ADR-005 puts authentication at the gateway and keeps `/internal/**` off
 Decision: A filter runs before authentication and routing and rejects dot segments, encoded dots, slashes, backslashes and NUL, double encoding and empty segments with 400, and answers 404 for any path under `/internal`. API keys are mandatory: the gateway does not start without at least one key of 16 or more characters, compares keys in constant time, keeps them out of logs, and removes the header before forwarding. Only `GET /api/tracking/{trackingNumber}` and `GET /actuator/health` are public. Unreachable services answer 503 and slow ones 504.
 
 Consequences: The internal API cannot be reached through the gateway by path manipulation, and a missing key is a startup error rather than an open gateway. One shared key per caller group is coarse and cannot tell users apart; per-user identity is the next step. Network policy in Kubernetes must still stop outside traffic from reaching the services directly.
+
+## ADR-014 One parameterized Dockerfile, one PostgreSQL server, hardened containers
+
+Status: accepted
+
+Context: Five modules must be packaged as images, started together with their databases by one command, and run with as few privileges as possible. Writing five near-identical Dockerfiles would let them drift apart.
+
+Decision: A single multi-stage `Dockerfile` at the repository root builds any module through the `SERVICE` build argument: a JDK 21 stage packages the module with the Maven Wrapper and a BuildKit dependency cache, and a JRE 21 stage runs the jar as a non-root user. Docker Compose runs one PostgreSQL server that hosts the four databases, each with its own role, password and no public access, created by an init script on first start. Containers run with a read-only root filesystem, no capabilities, `no-new-privileges` and a memory limit. Only the gateway publishes a port, on the loopback interface. Secrets are not written in any tracked file: `scripts/init-env` generates a git-ignored `.env` with random values, and Compose fails with a message when one is missing.
+
+Consequences: One place to change the build for every service, and a start that needs two commands from a fresh clone. A single PostgreSQL server is one failure domain and shares CPU between services; it is acceptable for development and the demo. Kubernetes manifests may use separate instances. The databases are logically isolated by role, not by server.
