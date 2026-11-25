@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: logistics
+
+resources:
+  - namespace.yaml
+  - postgres/statefulset.yaml
+  - services/warehouse-service.yaml
+  - services/tracking-service.yaml
+  - services/delivery-service.yaml
+  - services/order-service.yaml
+  - services/api-gateway.yaml
+  - network-policies.yaml
+  - ingress.yaml
+
+configMapGenerator:
+  - name: postgres-init
+    files:
+      - postgres/init-databases.sh
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: logistics
+
+images:
+  - name: ghcr.io/umaarov/logistics-api-gateway
+    newTag: main
+  - name: ghcr.io/umaarov/logistics-order-service
+    newTag: main
+  - name: ghcr.io/umaarov/logistics-warehouse-service
+    newTag: main
+  - name: ghcr.io/umaarov/logistics-delivery-service
+    newTag: main
+  - name: ghcr.io/umaarov/logistics-tracking-service
+    newTag: main

@@ -31,6 +31,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/security.md](docs/security.md) | Secret handling and security controls |
 | [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
+| [docs/kubernetes.md](docs/kubernetes.md) | Deploying to Kubernetes with Kustomize |
 | [docs/ci-cd.md](docs/ci-cd.md) | Pipelines, required checks, releases |
 | [docs/docker.md](docs/docker.md) | Running the whole platform with Docker Compose |
 | [docs/api/gateway.md](docs/api/gateway.md) | api-gateway routes, API key, path guard, limits |
@@ -106,4 +107,4 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | api-gateway | done |
 | Docker and Compose | files written, first run pending |
 | CI/CD | workflows written, first run pending |
-| Kubernetes | planned |
+| Kubernetes | manifests written, first deployment pending |

@@ -1,7 +1,10 @@
 server:
   port: ${SERVER_PORT:8083}
+  shutdown: graceful
 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
   application:
     name: delivery-service
   datasource:
@@ -26,6 +29,13 @@ delivery:
     interval-ms: 2000
 
 management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
   endpoints:
     web:
       exposure:

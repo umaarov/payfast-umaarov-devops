@@ -1,7 +1,10 @@
 server:
   port: ${SERVER_PORT:8081}
+  shutdown: graceful
 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
   application:
     name: order-service
   datasource:
@@ -28,6 +31,13 @@ order:
     pending-timeout: 2m
 
 management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
   endpoints:
     web:
       exposure:

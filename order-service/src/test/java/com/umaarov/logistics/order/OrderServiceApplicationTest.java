@@ -23,4 +23,15 @@ class OrderServiceApplicationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains("UP");
     }
+
+    @Test
+    void livenessAndReadinessProbesReportUp() {
+        var liveness = restTemplate.getForEntity("/actuator/health/liveness", String.class);
+        var readiness = restTemplate.getForEntity("/actuator/health/readiness", String.class);
+
+        assertThat(liveness.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(liveness.getBody()).contains("UP");
+        assertThat(readiness.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(readiness.getBody()).contains("UP");
+    }
 }

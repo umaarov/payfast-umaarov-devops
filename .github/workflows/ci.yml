@@ -80,6 +80,40 @@ jobs:
       - name: Scan the working tree
         run: ./gitleaks dir --config .gitleaks.toml --redact --no-banner --verbose .
 
+  kubernetes-manifests:
+    name: kubernetes-manifests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check that both copies of the database init script are identical
+        run: cmp docker/postgres/init-databases.sh k8s/postgres/init-databases.sh
+
+      - name: Install kubeconform
+        env:
+          KUBECONFORM_VERSION: 0.8.0
+        run: |
+          base="https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}"
+          archive="kubeconform-linux-amd64.tar.gz"
+          curl -sSfL -o "$archive" "$base/$archive"
+          curl -sSfL -o CHECKSUMS "$base/CHECKSUMS"
+          grep " ${archive}\$" CHECKSUMS | sha256sum --check -
+          tar -xzf "$archive" kubeconform
+
+      - name: Render and validate the manifests
+        run: kubectl kustomize k8s | ./kubeconform -strict -summary -kubernetes-version 1.31.0 -
+
+      - name: Reject Secret objects in the manifests
+        run: |
+          if kubectl kustomize k8s | grep -E '^kind: Secret$'; then
+            echo "Secrets must be created in the cluster, not committed"
+            exit 1
+          fi
+
   dependency-scan:
     name: dependency-scan
     runs-on: ubuntu-latest
