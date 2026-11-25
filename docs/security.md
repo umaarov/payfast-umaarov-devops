@@ -19,7 +19,7 @@
 | Branch protection on `main` | GitHub settings, [repo-setup.md](repo-setup.md) | to be applied by owner |
 | GitHub secret scanning and push protection | GitHub settings | to be applied by owner |
 | Dependabot for GitHub Actions | `.github/dependabot.yml` | done |
-| Dependabot for Maven | `.github/dependabot.yml` | planned |
+| Dependabot for Maven | `.github/dependabot.yml` | done |
 | API key required at the gateway | api-gateway | planned |
 | `/internal/**` not routed by the gateway | api-gateway | planned |
 | Input validation on every request body | all services | planned |

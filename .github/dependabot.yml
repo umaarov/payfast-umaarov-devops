@@ -1,5 +1,12 @@
 version: 2
 updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "type:chore"
+      - "area:devops"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
