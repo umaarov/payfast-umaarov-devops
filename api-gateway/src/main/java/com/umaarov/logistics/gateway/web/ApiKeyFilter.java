@@ -30,7 +30,7 @@ public class ApiKeyFilter implements WebFilter {
         PathPatternParser parser = new PathPatternParser();
         parser.setMatchOptionalTrailingSeparator(false);
         this.publicTimeline = parser.parse("/api/tracking/{trackingNumber}");
-        this.publicHealth = parser.parse("/actuator/health");
+        this.publicHealth = parser.parse("/actuator/health/**");
     }
 
     @Override

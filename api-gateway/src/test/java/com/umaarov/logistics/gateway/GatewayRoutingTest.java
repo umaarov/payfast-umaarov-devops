@@ -61,6 +61,16 @@ class GatewayRoutingTest {
     }
 
     @Test
+    void healthProbesArePublicAndStayInsideTheGateway() {
+        client.get().uri("/actuator/health/liveness").exchange().expectStatus().isOk()
+                .expectBody().returnResult();
+        client.get().uri("/actuator/health/readiness").exchange().expectStatus().isOk()
+                .expectBody().returnResult();
+
+        assertThat(DOWNSTREAM.requests()).isEmpty();
+    }
+
+    @Test
     void otherActuatorEndpointsAreNotExposed() {
         client.get().uri("/actuator/info").header("X-API-Key", KEY).exchange().expectStatus().isNotFound()
                 .expectBody().returnResult();

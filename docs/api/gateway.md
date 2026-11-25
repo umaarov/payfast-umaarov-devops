@@ -11,7 +11,7 @@ Port 8080. The only service that is reachable from outside. It authenticates cal
 | `/api/delivery/**` | delivery-service | API key |
 | `GET /api/tracking/{trackingNumber}` | tracking-service | none, public |
 | any other `/api/tracking/**` | tracking-service | API key |
-| `GET /actuator/health` | gateway itself | none |
+| `GET /actuator/health` and `/actuator/health/liveness`, `/actuator/health/readiness` | gateway itself | none, used by Docker and Kubernetes probes |
 | `/internal/**` | never routed | answers 404 |
 
 Paths are forwarded unchanged. Unknown paths answer 401 without a key and 404 with a valid key. Only the `health` actuator endpoint is exposed.
