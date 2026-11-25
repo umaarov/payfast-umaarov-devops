@@ -31,6 +31,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/security.md](docs/security.md) | Secret handling and security controls |
 | [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
+| [docs/repo-setup.md](docs/repo-setup.md) | GitHub settings runbook: protection, labels, board |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Branching, commits, pull requests |
 
 ## Run steps
@@ -41,7 +42,7 @@ Added together with the application skeleton.
 
 | Stage | Status |
 | --- | --- |
-| Repository, governance, documentation | in progress |
+| Repository, governance, documentation | done |
 | Application skeleton | planned |
 | warehouse-service | planned |
 | tracking-service | planned |
