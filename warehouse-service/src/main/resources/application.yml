@@ -4,6 +4,16 @@ server:
 spring:
   application:
     name: warehouse-service
+  datasource:
+    url: ${WAREHOUSE_DB_URL:jdbc:postgresql://localhost:5432/warehouse}
+    username: ${WAREHOUSE_DB_USER:warehouse}
+    password: ${WAREHOUSE_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
 
 management:
   endpoints:
