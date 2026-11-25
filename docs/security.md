@@ -19,11 +19,13 @@
 | Branch protection on `main` | GitHub settings, [repo-setup.md](repo-setup.md) | to be applied by owner |
 | GitHub secret scanning and push protection | GitHub settings | to be applied by owner |
 | Dependabot for GitHub Actions | `.github/dependabot.yml` | done |
-| Dependabot for Maven | `.github/dependabot.yml` | planned |
+| Dependabot for Maven | `.github/dependabot.yml` | done |
 | API key required at the gateway | api-gateway | planned |
 | `/internal/**` not routed by the gateway | api-gateway | planned |
-| Input validation on every request body | all services | planned |
-| Database credentials from environment only | all services | planned |
+| Input validation on every request body | all services | in progress: warehouse-service done |
+| Database credentials from environment only | all services | in progress: warehouse-service done |
+| No delete endpoints for stock and reservations | warehouse-service | done |
+| Database check constraints repeat business invariants | warehouse-service | done |
 | Containers run as a non-root user | Dockerfiles | planned |
 | Secret scan in CI | GitHub Actions | planned |
 | Dependency vulnerability scan in CI | GitHub Actions | planned |

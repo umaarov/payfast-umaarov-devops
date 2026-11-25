@@ -79,3 +79,23 @@ Context: The history is read by auditors and must map each change to an issue.
 Decision: Pull requests are squash-merged. Commit and PR titles follow Conventional Commits and reference the issue number.
 
 Consequences: One commit per change on `main`, easy to revert and to trace.
+
+## ADR-008 Stock reservation model
+
+Status: accepted
+
+Context: Orders must not promise stock that does not exist, even when many orders arrive at once, and a failed order must give its stock back.
+
+Decision: Each product keeps `quantity_on_hand` and `quantity_reserved`. A reservation is one row per order (`order_id` is unique) with one line per product. Reserving runs a single conditional `UPDATE` per product that succeeds only if enough stock is available, inside one transaction, with skus processed in sorted order. A reservation ends as `RELEASED` (stock returned) or `COMMITTED` (stock leaves the warehouse). Both transitions are idempotent. Database check constraints repeat the invariants. No endpoint deletes data.
+
+Consequences: No overselling under concurrency, no distributed lock, and repeated calls from a retrying order-service are safe. Stock history is not kept; an audit trail of movements would be a later addition.
+
+## ADR-009 Integration tests on H2 in PostgreSQL mode
+
+Status: accepted
+
+Context: The development machine cannot always run Docker, and tests must pass from a fresh clone.
+
+Decision: Integration tests run against in-memory H2 in PostgreSQL compatibility mode with the real Flyway migrations. Migrations use portable SQL only. Behavior on real PostgreSQL is verified by the Docker Compose end-to-end smoke test and by CI.
+
+Consequences: Fast, dependency-free tests. A PostgreSQL-only difference can slip past unit-level tests, which is why the smoke test against PostgreSQL is mandatory before release.
