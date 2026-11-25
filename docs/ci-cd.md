@@ -11,7 +11,7 @@ Runs on every pull request to `main`, on every push to `main`, and on demand.
 | `build` | JDK 21, `./mvnw -B -ntp verify`: compiles all modules and runs all tests. Test reports are uploaded when it fails | yes |
 | `secret-scan` | Fails if a `.env` file is tracked, then runs gitleaks over the full git history and over the working tree | yes |
 | `kubernetes-manifests` | Renders `k8s/` with Kustomize, validates the result against the Kubernetes 1.31 schemas with kubeconform, rejects committed Secret objects, and checks that the two copies of the database init script are identical | yes |
-| `compose-smoke` | Builds all five images, starts the whole stack with Docker Compose on real PostgreSQL, waits until every container is healthy, then runs `scripts/smoke-test.sh` against the gateway. Prints container logs when it fails | yes |
+| `compose-smoke` | Builds all five images, starts the whole stack with Docker Compose on real PostgreSQL, waits until every container is healthy, then runs the end-to-end `scripts/smoke-test.sh` through the gateway: place an order, follow the parcel to delivered, reject and cancel orders (see [testing.md](testing.md)). Prints container logs when it fails | yes |
 | `dependency-scan` | Trivy scans `pom.xml` dependencies and the Docker and Compose configuration for HIGH and CRITICAL findings that have a fix | no, report only |
 
 `compose-smoke` also scans the `order-service` image with Trivy, report only. It is the first place where the code runs against PostgreSQL instead of the in-memory test database (ADR-009).
@@ -45,7 +45,7 @@ git push origin v0.1.0
 
 The images appear under the repository's Packages. They are private when the repository is private; to pull them from a cluster, create an image pull secret from a token with `read:packages`.
 
-Deploying is a separate step: Kubernetes manifests reference these image names (see the Kubernetes document once it exists).
+Deploying is a separate step: the Kubernetes manifests reference these image names (see [kubernetes.md](kubernetes.md)).
 
 ## Reading a failed run
 
@@ -63,7 +63,7 @@ Deploying is a separate step: Kubernetes manifests reference these image names (
 docker compose up --build -d --wait
 ```
 
-The smoke script is written for Linux shells and runs in CI. On Windows use Git Bash or WSL:
+The smoke script is written for Linux shells and runs in CI. On Windows use Git Bash or WSL, with the stack from the previous step running:
 
 ```
 sh scripts/smoke-test.sh
