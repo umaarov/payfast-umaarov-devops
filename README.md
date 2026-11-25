@@ -31,6 +31,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/security.md](docs/security.md) | Secret handling and security controls |
 | [docs/review-checklist.md](docs/review-checklist.md) | Checklist used for every pull request |
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
+| [docs/api/order.md](docs/api/order.md) | order-service endpoints, order flow, compensation, configuration |
 | [docs/api/warehouse.md](docs/api/warehouse.md) | warehouse-service endpoints, stock model, configuration |
 | [docs/api/tracking.md](docs/api/tracking.md) | tracking-service endpoints, statuses, configuration |
 | [docs/api/delivery.md](docs/api/delivery.md) | delivery-service endpoints, lifecycle, outbox events, configuration |
@@ -67,7 +68,7 @@ curl http://localhost:8082/actuator/health
 
 Each service reads its port from `SERVER_PORT`; defaults are in the Services table.
 
-warehouse-service, tracking-service and delivery-service need PostgreSQL. Until Docker Compose is added, follow "Running alone" in [docs/api/warehouse.md](docs/api/warehouse.md), [docs/api/tracking.md](docs/api/tracking.md) and [docs/api/delivery.md](docs/api/delivery.md). The tests do not need a database server.
+order-service, warehouse-service, tracking-service and delivery-service need PostgreSQL. Until Docker Compose is added, follow "Running alone" in [docs/api/order.md](docs/api/order.md), [docs/api/warehouse.md](docs/api/warehouse.md), [docs/api/tracking.md](docs/api/tracking.md) and [docs/api/delivery.md](docs/api/delivery.md). The tests do not need a database server.
 
 ### Troubleshooting on Windows
 
@@ -87,7 +88,7 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | warehouse-service | done |
 | tracking-service | done |
 | delivery-service | done |
-| order-service | planned |
+| order-service | done |
 | api-gateway | planned |
 | Docker and Compose | planned |
 | CI/CD | planned |

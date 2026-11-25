@@ -119,3 +119,13 @@ Context: A courier's status change must update delivery-service, tracking-servic
 Decision: Each status change and the events it causes are written in one local transaction (`outbox_events`). A scheduled dispatcher delivers them over HTTP in order per target. Transient failures keep the event pending; permanent client errors park it as `REJECTED` and are logged. Every event has its own `eventId` so receivers can deduplicate. Delivery-service assigns a courier synchronously when the delivery is created and fails with 409 if none has capacity, which keeps the order flow simple.
 
 Consequences: Status changes survive outages of other services, and delivery is at-least-once. Other services see updates with a delay of a few seconds. The dispatcher polls the database; with several replicas, events may be sent twice, which receivers tolerate. A broker would replace the dispatcher without changing the outbox contract.
+
+## ADR-012 Order flow as orchestration with compensation and a sweeper
+
+Status: accepted
+
+Context: Placing an order touches three services that each have their own database, so no single transaction covers it. A failure half way must not leave stock reserved or a courier busy for an order that does not exist.
+
+Decision: order-service orchestrates the flow with synchronous calls, in the order tracking `CREATED`, stock reservation, delivery creation. Each step is idempotent. On failure it compensates step by step (cancel delivery, release stock, close tracking) and keeps the order as `REJECTED`. Whatever cannot be undone because a service is down is flagged `compensation_pending` and retried by a scheduled sweeper, which also rejects orders stuck in `PENDING` for more than 2 minutes. Clients may send an `Idempotency-Key` so a retried request never creates a second order. Stock leaves the warehouse when delivery-service reports the pickup, and the sequence is cancel the delivery first, then release the stock, so a parcel that was already picked up is never cancelled.
+
+Consequences: A visible, auditable outcome for every order, and no manual clean-up after outages. The price is that tracking-service, warehouse-service and delivery-service must all be reachable to accept an order; if one is not, the order is rejected with 503. The sweeper polls the database; with several replicas, two instances may compensate the same order, which is harmless because every step is idempotent and an optimistic lock lets only one write win.
