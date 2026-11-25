@@ -149,3 +149,13 @@ Context: Five modules must be packaged as images, started together with their da
 Decision: A single multi-stage `Dockerfile` at the repository root builds any module through the `SERVICE` build argument: a JDK 21 stage packages the module with the Maven Wrapper and a BuildKit dependency cache, and a JRE 21 stage runs the jar as a non-root user. Docker Compose runs one PostgreSQL server that hosts the four databases, each with its own role, password and no public access, created by an init script on first start. Containers run with a read-only root filesystem, no capabilities, `no-new-privileges` and a memory limit. Only the gateway publishes a port, on the loopback interface. Secrets are not written in any tracked file: `scripts/init-env` generates a git-ignored `.env` with random values, and Compose fails with a message when one is missing.
 
 Consequences: One place to change the build for every service, and a start that needs two commands from a fresh clone. A single PostgreSQL server is one failure domain and shares CPU between services; it is acceptable for development and the demo. Kubernetes manifests may use separate instances. The databases are logically isolated by role, not by server.
+
+## ADR-015 GitHub Actions pipeline with a real-stack smoke test
+
+Status: accepted
+
+Context: The audit asks how a change is approved and whether code holds passwords. Tests run on an in-memory database (ADR-009), so a PostgreSQL-only problem or a broken image would not be seen by unit tests. The author's own machine cannot always run Docker.
+
+Decision: Every pull request must pass four checks before it can be merged. `build` runs the full Maven build and tests. `secret-scan` rejects tracked `.env` files and runs gitleaks over the whole history and the working tree. `compose-smoke` builds all images, starts the Compose stack on real PostgreSQL and checks the gateway behaviour with `scripts/smoke-test.sh`. `dependency-scan` reports vulnerable dependencies without blocking. Pushes to `main` and version tags publish the images to GitHub Container Registry with the built-in `GITHUB_TOKEN`, so no long-lived credential is stored. Workflows run with read-only repository permissions, and only the publish job may write packages. Actions are pinned to major versions and kept current by Dependabot.
+
+Consequences: The pipeline, not one person's laptop, proves that the system starts and that the gateway is closed. The smoke check adds several minutes to every pull request. Pinning by major version instead of commit hash trusts the action publishers' tags; pinning by hash is stricter and can be adopted later. The vulnerability scan is advisory until the findings of the first run are reviewed.
