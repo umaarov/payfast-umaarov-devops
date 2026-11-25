@@ -4,6 +4,28 @@ server:
 spring:
   application:
     name: order-service
+  datasource:
+    url: ${ORDER_DB_URL:jdbc:postgresql://localhost:5432/orders}
+    username: ${ORDER_DB_USER:orders}
+    password: ${ORDER_DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+order:
+  downstream:
+    warehouse-url: ${WAREHOUSE_SERVICE_URL:http://localhost:8082}
+    delivery-url: ${DELIVERY_SERVICE_URL:http://localhost:8083}
+    tracking-url: ${TRACKING_SERVICE_URL:http://localhost:8084}
+    connect-timeout: 2s
+    read-timeout: 3s
+  sweeper:
+    enabled: true
+    interval-ms: 30000
+    pending-timeout: 2m
 
 management:
   endpoints:

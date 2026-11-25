@@ -22,12 +22,15 @@
 | Dependabot for Maven | `.github/dependabot.yml` | done |
 | API key required at the gateway | api-gateway | planned |
 | `/internal/**` not routed by the gateway | api-gateway | planned |
-| Input validation on every request body | all services | in progress: warehouse, tracking, delivery done |
-| Database credentials from environment only | all services | in progress: warehouse, tracking, delivery done |
+| Input validation on every request body | all services | in progress: order, warehouse, tracking, delivery done |
+| Database credentials from environment only | all services | in progress: order, warehouse, tracking, delivery done |
 | Recipient name, phone and address never leave delivery-service in events | delivery-service | done |
 | Outgoing HTTP calls have connect and read timeouts | delivery-service | done |
 | Courier capacity cannot be exceeded under concurrency | delivery-service | done |
 | Public tracking timeline exposes no personal data or internal ids | tracking-service | done |
+| Customer name, phone and address are sent only to delivery-service, never to tracking-service | order-service | done |
+| Idempotency-Key makes order placement safe to retry | order-service | done |
+| Failed order flows are compensated and retried until stock and courier are released | order-service | done |
 | Tracking events are append-only | tracking-service | done |
 | No delete endpoints for stock and reservations | warehouse-service | done |
 | Database check constraints repeat business invariants | warehouse-service | done |
