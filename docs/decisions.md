@@ -129,3 +129,13 @@ Context: Placing an order touches three services that each have their own databa
 Decision: order-service orchestrates the flow with synchronous calls, in the order tracking `CREATED`, stock reservation, delivery creation. Each step is idempotent. On failure it compensates step by step (cancel delivery, release stock, close tracking) and keeps the order as `REJECTED`. Whatever cannot be undone because a service is down is flagged `compensation_pending` and retried by a scheduled sweeper, which also rejects orders stuck in `PENDING` for more than 2 minutes. Clients may send an `Idempotency-Key` so a retried request never creates a second order. Stock leaves the warehouse when delivery-service reports the pickup, and the sequence is cancel the delivery first, then release the stock, so a parcel that was already picked up is never cancelled.
 
 Consequences: A visible, auditable outcome for every order, and no manual clean-up after outages. The price is that tracking-service, warehouse-service and delivery-service must all be reachable to accept an order; if one is not, the order is rejected with 503. The sweeper polls the database; with several replicas, two instances may compensate the same order, which is harmless because every step is idempotent and an optimistic lock lets only one write win.
+
+## ADR-013 Gateway path guard and fail-closed API keys
+
+Status: accepted
+
+Context: ADR-005 puts authentication at the gateway and keeps `/internal/**` off the public side. A gateway that forwards raw paths can be tricked: a path with dot segments or encoded slashes passes a route match such as `/api/orders/**` and is then normalized by the downstream server into an internal endpoint.
+
+Decision: A filter runs before authentication and routing and rejects dot segments, encoded dots, slashes, backslashes and NUL, double encoding and empty segments with 400, and answers 404 for any path under `/internal`. API keys are mandatory: the gateway does not start without at least one key of 16 or more characters, compares keys in constant time, keeps them out of logs, and removes the header before forwarding. Only `GET /api/tracking/{trackingNumber}` and `GET /actuator/health` are public. Unreachable services answer 503 and slow ones 504.
+
+Consequences: The internal API cannot be reached through the gateway by path manipulation, and a missing key is a startup error rather than an open gateway. One shared key per caller group is coarse and cannot tell users apart; per-user identity is the next step. Network policy in Kubernetes must still stop outside traffic from reaching the services directly.
