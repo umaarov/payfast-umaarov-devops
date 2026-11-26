@@ -9,3 +9,6 @@ paths = [
     '''frontend/src/test/.*''',
     '''frontend/src/.*\.test\.tsx?''',
 ]
+regexes = [
+    '''^wrong-key-0123456789$''',
+]
