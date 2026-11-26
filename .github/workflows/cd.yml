@@ -22,12 +22,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service:
-          - api-gateway
-          - order-service
-          - warehouse-service
-          - delivery-service
-          - tracking-service
+        include:
+          - service: api-gateway
+            context: .
+            build_args: SERVICE=api-gateway
+          - service: order-service
+            context: .
+            build_args: SERVICE=order-service
+          - service: warehouse-service
+            context: .
+            build_args: SERVICE=warehouse-service
+          - service: delivery-service
+            context: .
+            build_args: SERVICE=delivery-service
+          - service: tracking-service
+            context: .
+            build_args: SERVICE=tracking-service
+          - service: frontend
+            context: frontend
+            build_args: ""
     steps:
       - name: Check out the code
         uses: actions/checkout@v7
@@ -61,9 +74,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
-          context: .
-          build-args: |
-            SERVICE=${{ matrix.service }}
+          context: ${{ matrix.context }}
+          build-args: ${{ matrix.build_args }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

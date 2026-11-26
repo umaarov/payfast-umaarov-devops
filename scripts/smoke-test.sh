@@ -3,6 +3,7 @@ set -eu
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 base="${GATEWAY_URL:-http://localhost:8080}"
+ui="${FRONTEND_URL:-http://localhost:3000}"
 key="$(grep '^GATEWAY_API_KEYS=' "$root/.env" | cut -d= -f2- | cut -d, -f1)"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
@@ -189,6 +190,41 @@ report "cancelled order has status CANCELLED" CANCELLED "$(text_field status)"
 report "cancelling twice is accepted" 200 "$(call POST "/api/orders/$order_id/cancel")"
 report "cancelled stock is released" yes "$(stock_is 8 0 && echo yes || echo no)"
 eventually "timeline shows CANCELLED" timeline_has "$tracking_number" CANCELLED
+
+fetch_ui() {
+    curl -s -o "$body_file" -w '%{http_code}' "$ui$1" || true
+}
+
+ui_headers() {
+    curl -s -D - -o /dev/null "$ui$1" | tr -d '\r' || true
+}
+
+echo "== Web interface"
+if [ "$(status "$ui/healthz")" != 200 ] && [ "${REQUIRE_UI:-0}" != 1 ]; then
+    echo "skip web interface checks, nothing answers at $ui (set REQUIRE_UI=1 to make this an error)"
+else
+    report "frontend health is public" 200 "$(status "$ui/healthz")"
+    report "home page is served" 200 "$(fetch_ui /)"
+    report "home page has the app root" yes "$(body_has '<div id="root">')"
+    report "a console route falls back to the app" 200 "$(fetch_ui /console/orders)"
+    report "console route has the app root" yes "$(body_has '<div id="root">')"
+    report "a tracking route falls back to the app" 200 "$(fetch_ui "/track/$tracking_number")"
+    report "a missing asset is not replaced by the app" 404 "$(status "$ui/assets/missing.js")"
+    report "content security policy is set" 1 "$(ui_headers / | grep -ci "^content-security-policy:.*default-src 'self'")"
+    report "content type sniffing is off" 1 "$(ui_headers / | grep -ci '^x-content-type-options: nosniff')"
+    report "framing is refused" 1 "$(ui_headers / | grep -ci "^content-security-policy:.*frame-ancestors 'none'")"
+    report "server version is hidden" 0 "$(ui_headers / | grep -ci '^server: nginx/')"
+    report "the page itself is not cached" 1 "$(ui_headers / | grep -ci '^cache-control: no-cache')"
+    report "public tracking works through the frontend" 200 "$(fetch_ui "/api/tracking/$tracking_number")"
+    report "tracking through the frontend shows the timeline" yes "$(body_has '"status":"CANCELLED"')"
+    report "API answers carry one content security policy" 1 "$(ui_headers "/api/tracking/$tracking_number" | grep -ci '^content-security-policy:')"
+    report "API answers are not cached" 1 "$(ui_headers "/api/tracking/$tracking_number" | grep -ci '^cache-control: no-store')"
+    report "products need a key through the frontend" 401 "$(status "$ui/api/warehouse/products")"
+    report "a wrong key is refused through the frontend" 401 "$(status -H "X-API-Key: wrong-key-0123456789" "$ui/api/warehouse/products")"
+    report "the key works through the frontend" 200 "$(status -H "X-API-Key: $key" "$ui/api/warehouse/products")"
+    report "the gateway health endpoint is not exposed" no "$(fetch_ui /actuator/health > /dev/null; body_has '"status":"UP"')"
+    report "unsupported methods are refused" 405 "$(status -X TRACE "$ui/api/orders")"
+fi
 
 if [ "$failures" -gt 0 ]; then
     echo "$failures check(s) failed"

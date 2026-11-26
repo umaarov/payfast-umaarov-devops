@@ -11,6 +11,7 @@ resources:
   - services/delivery-service.yaml
   - services/order-service.yaml
   - services/api-gateway.yaml
+  - services/frontend.yaml
   - network-policies.yaml
   - ingress.yaml
 
@@ -33,4 +34,6 @@ images:
   - name: ghcr.io/umaarov/logistics-delivery-service
     newTag: main
   - name: ghcr.io/umaarov/logistics-tracking-service
+    newTag: main
+  - name: ghcr.io/umaarov/logistics-frontend
     newTag: main

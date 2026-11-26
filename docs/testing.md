@@ -16,7 +16,7 @@ Test counts at the end of Sprint 1: api-gateway 55, order-service 70, warehouse-
 
 ## End-to-end smoke test
 
-`scripts/smoke-test.sh` talks only to the gateway, the way a real client does. It reads the first key from `GATEWAY_API_KEYS` in the `.env` file at the repository root and uses a unique sku and courier phone per run, so it can be repeated on a running stack without cleaning up.
+`scripts/smoke-test.sh` talks to the gateway the way a real client does, and then to the frontend container. It reads the first key from `GATEWAY_API_KEYS` in the `.env` file at the repository root and uses a unique sku and courier phone per run, so it can be repeated on a running stack without cleaning up.
 
 | Part | Checks |
 | --- | --- |
@@ -26,6 +26,7 @@ Test counts at the end of Sprint 1: api-gateway 55, order-service 70, warehouse-
 | Public tracking | Timeline needs no key, contains `CREATED` and `COURIER_ASSIGNED`, and shows no customer name or address |
 | Delivery lifecycle | Skipping a step gives 409; `PICKED_UP` moves the order to `IN_DELIVERY` and stock leaves the warehouse; cancelling then gives 409; `FAILED` needs a note; retry and `DELIVERED` move the order to `DELIVERED`; the timeline shows every step; a delivered parcel cannot move again |
 | Rejection and cancel | Too much stock gives 409 `INSUFFICIENT_STOCK`; unknown sku gives 422; stock is untouched after rejections; cancelling releases the stock, closes the timeline with `CANCELLED`, and can be repeated |
+| Web interface | Through the frontend container: the app and its fallback routes are served, a missing asset gives 404, the content security policy and other headers are set once, `/api` is proxied with and without a key, tracking works, the gateway health endpoint is not exposed, unsupported methods give 405 |
 
 Events travel through the delivery outbox, so some checks wait up to 45 seconds and print `FAIL ... (timed out)` if the state never arrives.
 
@@ -40,7 +41,7 @@ sh scripts/smoke-test.sh
 docker compose down -v
 ```
 
-`sh` comes with Git for Windows (Git Bash) or WSL. Against another gateway, set `GATEWAY_URL`.
+`sh` comes with Git for Windows (Git Bash) or WSL. Against another gateway, set `GATEWAY_URL`; the frontend is expected at `FRONTEND_URL`, default `http://localhost:3000`. When nothing answers there the web interface part is skipped with a message, which is what the no-Docker run below does. Set `REQUIRE_UI=1` to make that an error, as CI does.
 
 Without Docker, the five services can be started with in-memory databases for a quick check. In five terminals, from the repository root, with the test classpath so H2 is available:
 

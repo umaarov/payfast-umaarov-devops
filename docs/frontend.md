@@ -7,7 +7,7 @@ A React 19 and TypeScript single-page app built with Vite, in `frontend/`. It ha
 | Public tracking | `/` and `/track/<number>` | none | Search a tracking number and see the parcel timeline, newest step first. Refreshes every 15 seconds until the parcel is delivered or cancelled |
 | Staff console | `/console/...` | API key | Dashboard, orders, deliveries, couriers, warehouse |
 
-The app talks only to the gateway through relative `/api/...` paths, so the browser sees one origin and no CORS setup is needed. Design decision: [ADR-017](decisions.md).
+The app talks only to the gateway through relative `/api/...` paths, so the browser sees one origin and no CORS setup is needed. Design decisions: [ADR-017](decisions.md) for the app and [ADR-018](decisions.md) for the container.
 
 ## Staff console
 
@@ -50,6 +50,12 @@ Open `http://localhost:5173`. Vite proxies `/api` to `http://localhost:8080`. Fo
 $env:GATEWAY_URL = "http://localhost:8090"
 npm run dev
 ```
+
+## Run it in a container
+
+`docker compose up --build -d` also builds and starts the frontend on `http://localhost:3000`, served by nginx with no Node.js needed at run time. nginx proxies `/api/` to the gateway, so the browser sees one origin and no CORS settings are needed. The image, the proxy rules and the security headers are described in [docker.md](docker.md); the cluster setup is in [kubernetes.md](kubernetes.md).
+
+Because every response carries a policy of `default-src 'self'`, the app must not use inline scripts, inline `style` attributes in markup, remote fonts, or calls to another origin. Style values set from code, such as the width of the courier load bar, are allowed.
 
 ## Commands
 

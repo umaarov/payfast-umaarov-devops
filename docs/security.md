@@ -25,7 +25,11 @@
 | API key kept in `sessionStorage` of the tab only, removed on sign-out, on a 401, and when the tab closes | frontend | done |
 | Public tracking page never sends the API key | frontend | done |
 | No user input rendered as HTML, no inline scripts in the page | frontend | done |
-| Strict content security policy and security headers on the frontend container | frontend container | planned, with the container image |
+| Strict content security policy (same origin only, no inline script, no framing) and security headers, sent once on every response | frontend container | done, checked by the smoke test |
+| Frontend container runs as a non-root user with a read-only root filesystem, no capabilities and no privilege escalation | Compose, Kubernetes | done |
+| `/api/` is the only proxied path; gateway actuator paths and unsupported methods are refused at the frontend | frontend container | done, checked by the smoke test |
+| Only the frontend can reach the gateway inside the cluster; the ingress reaches only the frontend | `k8s/network-policies.yaml` | done, not enforced until run on a cluster with a policy-enforcing network plugin |
+| Corporate CA for builds behind TLS inspection is passed as a build secret and never stored in an image or disabled | `frontend/Dockerfile` | done |
 | API key required at the gateway, fail-closed at startup, constant-time compare, key never forwarded or logged | api-gateway | done |
 | `/internal/**` not routed by the gateway; path traversal and encoded-slash tricks rejected | api-gateway | done |
 | Request size limit, secure response headers, request id on every response | api-gateway | done |
