@@ -9,6 +9,7 @@ Runs on every pull request to `main`, on every push to `main`, and on demand.
 | Job | What it does | Required for merge |
 | --- | --- | --- |
 | `build` | JDK 21, `./mvnw -B -ntp verify`: compiles all modules and runs all tests. Test reports are uploaded when it fails | yes |
+| `frontend` | Node.js 24, `npm ci`, ESLint, the Vitest suite, type-check and production build of the React app, then `npm audit` for high-severity production dependency issues | yes |
 | `secret-scan` | Fails if a `.env` file is tracked, then runs gitleaks over the full git history and over the working tree | yes |
 | `kubernetes-manifests` | Renders `k8s/` with Kustomize, validates the result against the Kubernetes 1.31 schemas with kubeconform, rejects committed Secret objects, and checks that the two copies of the database init script are identical | yes |
 | `compose-smoke` | Builds all five images, starts the whole stack with Docker Compose on real PostgreSQL, waits until every container is healthy, then runs the end-to-end `scripts/smoke-test.sh` through the gateway: place an order, follow the parcel to delivered, reject and cancel orders (see [testing.md](testing.md)). Prints container logs when it fails | yes |

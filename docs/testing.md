@@ -7,11 +7,12 @@
 | Unit and slice tests | Each service module | Domain rules, validation, error mapping, repositories on H2 in PostgreSQL mode (ADR-009) | `./mvnw verify`, CI job `build` |
 | Service tests with fake neighbours | order-service, delivery-service, gateway | Failure handling when a neighbour is slow, down or answers 5xx: compensation, outbox retries, 503 and 504 mapping | `./mvnw verify` |
 | Concurrency tests | warehouse-service, delivery-service | Stock and courier capacity are never oversold under simultaneous requests | `./mvnw verify` |
+| Frontend tests | `frontend/` | Request wrapper, validation, delivery rules and every screen against a mocked `fetch` | `npm test`, CI job `frontend` |
 | End-to-end smoke test | `scripts/smoke-test.sh` | The five real services work together through the gateway | CI job `compose-smoke` on real PostgreSQL; locally against any running stack |
 | Manifest checks | `k8s/` | Manifests render, pass schema validation and contain no `Secret` | CI job `kubernetes-manifests` |
 | Secret scan | whole history and working tree | No key or password was ever committed | CI job `secret-scan` |
 
-Test counts at the end of Sprint 1: api-gateway 55, order-service 70, warehouse-service 28, delivery-service 49, tracking-service 18, 220 in total.
+Test counts at the end of Sprint 1: api-gateway 55, order-service 70, warehouse-service 28, delivery-service 49, tracking-service 18, 220 in total. The frontend adds 67 tests.
 
 ## End-to-end smoke test
 
