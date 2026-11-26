@@ -13,6 +13,7 @@ Repository: `payfast-umaarov-devops`
 | warehouse-service | Inventory, stock reservations | 8082 |
 | delivery-service | Couriers, delivery assignment and delivery status | 8083 |
 | tracking-service | Tracking events and public parcel timeline | 8084 |
+| frontend | Public parcel tracking page and staff console, proxies `/api/` to the gateway | 3000 (Docker), 5173 (dev) |
 
 ## Stack
 

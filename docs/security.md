@@ -56,7 +56,7 @@
 | Workflows use read-only permissions; publishing uses the built-in token only | GitHub Actions | done |
 | Pull requests need build, secret-scan and compose-smoke to pass | GitHub settings, [repo-setup.md](repo-setup.md) | to be applied by owner |
 | Restricted Pod Security Standard, non-root, read-only root filesystem, no capabilities, no service account token | `k8s/` | done, not yet applied to a cluster |
-| Default-deny network policies with explicit allow rules; only the gateway is reachable from the ingress | `k8s/network-policies.yaml` | done, not yet applied to a cluster |
+| Default-deny network policies with explicit allow rules; the ingress reaches only the frontend, which reaches only the gateway | `k8s/network-policies.yaml` | done, not yet applied to a cluster |
 | Secrets created in the cluster from the git-ignored `.env`; CI rejects Secret objects in the manifests | `k8s/`, CI | done |
 | CPU and memory requests and limits, probes, disruption budgets | `k8s/` | done |
 

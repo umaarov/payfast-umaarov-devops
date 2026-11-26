@@ -1,6 +1,6 @@
 # api-gateway
 
-Port 8080. The only service that is reachable from outside. It authenticates callers with an API key, routes public paths to the right service, and refuses everything else.
+Port 8080. The only backend service that is reachable from outside. The web app in `frontend/` reaches it through its own `/api/` proxy. It authenticates callers with an API key, routes public paths to the right service, and refuses everything else.
 
 ## Routes
 
