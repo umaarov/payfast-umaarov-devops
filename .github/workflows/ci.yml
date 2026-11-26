@@ -191,7 +191,17 @@ jobs:
         run: docker compose up --build -d --wait --wait-timeout 600
 
       - name: Run the smoke test
-        run: sh scripts/smoke-test.sh
+        run: REQUIRE_UI=1 sh scripts/smoke-test.sh
+
+      - name: Scan the frontend image
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: logistics/frontend:dev
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+          format: table
 
       - name: Scan the order-service image
         continue-on-error: true

@@ -12,10 +12,10 @@ Runs on every pull request to `main`, on every push to `main`, and on demand.
 | `frontend` | Node.js 24, `npm ci`, ESLint, the Vitest suite, type-check and production build of the React app, then `npm audit` for high-severity production dependency issues | yes |
 | `secret-scan` | Fails if a `.env` file is tracked, then runs gitleaks over the full git history and over the working tree | yes |
 | `kubernetes-manifests` | Renders `k8s/` with Kustomize, validates the result against the Kubernetes 1.31 schemas with kubeconform, rejects committed Secret objects, and checks that the two copies of the database init script are identical | yes |
-| `compose-smoke` | Builds all five images, starts the whole stack with Docker Compose on real PostgreSQL, waits until every container is healthy, then runs the end-to-end `scripts/smoke-test.sh` through the gateway: place an order, follow the parcel to delivered, reject and cancel orders (see [testing.md](testing.md)). Prints container logs when it fails | yes |
+| `compose-smoke` | Builds all six images, starts the whole stack with Docker Compose on real PostgreSQL, waits until every container is healthy, then runs the end-to-end `scripts/smoke-test.sh`: through the gateway it places an order, follows the parcel to delivered, rejects and cancels orders, and through the frontend container it checks the app, the security headers and the `/api` proxy (see [testing.md](testing.md)). Prints container logs when it fails | yes |
 | `dependency-scan` | Trivy scans `pom.xml` dependencies and the Docker and Compose configuration for HIGH and CRITICAL findings that have a fix | no, report only |
 
-`compose-smoke` also scans the `order-service` image with Trivy, report only. It is the first place where the code runs against PostgreSQL instead of the in-memory test database (ADR-009).
+`compose-smoke` also scans the `frontend` and `order-service` images with Trivy, report only. It is the first place where the code runs against PostgreSQL instead of the in-memory test database (ADR-009).
 
 Workflow settings that matter:
 
@@ -26,7 +26,7 @@ Workflow settings that matter:
 
 ## cd.yml
 
-Runs on every push to `main`, on tags that start with `v`, and on demand. For each of the five services it builds the image from the root `Dockerfile` and pushes it to GitHub Container Registry as `ghcr.io/<owner>/logistics-<service>`.
+Runs on every push to `main`, on tags that start with `v`, and on demand. For each of the five services it builds the image from the root `Dockerfile`, and for the web app it builds `frontend/Dockerfile` with `frontend/` as the context. Each is pushed to GitHub Container Registry as `ghcr.io/<owner>/logistics-<name>`, where the name is the service name or `frontend`.
 
 | Event | Image tags |
 | --- | --- |

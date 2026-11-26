@@ -54,7 +54,7 @@ Repository: `payfast-umaarov-devops`
 docker compose up --build -d
 ```
 
-On Linux or macOS use `sh scripts/init-env.sh`. The gateway listens on `http://localhost:8080`. Details, hardening and troubleshooting are in [docs/docker.md](docs/docker.md).
+On Linux or macOS use `sh scripts/init-env.sh`. The web app is on `http://localhost:3000` and the gateway on `http://localhost:8080`. Details, hardening and troubleshooting are in [docs/docker.md](docs/docker.md).
 
 ### Without Docker
 
@@ -98,7 +98,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. Parcel tracking is public; the staff console asks for the API key from `GATEWAY_API_KEYS`. Details in [docs/frontend.md](docs/frontend.md).
+Open `http://localhost:5173`. Parcel tracking is public; the staff console asks for the API key from `GATEWAY_API_KEYS`. With Docker the same app is served on `http://localhost:3000` without Node.js. Details in [docs/frontend.md](docs/frontend.md).
 
 ### Troubleshooting on Windows
 
@@ -115,8 +115,9 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | --- | --- | --- |
 | Repository, governance, documentation | done | Reviewed through pull requests |
 | warehouse-service, tracking-service, delivery-service, order-service, api-gateway | done | 220 automated tests in `./mvnw verify` |
-| Whole flow across the five services | done | `scripts/smoke-test.sh`, 53 checks, run against the five real services |
+| Whole flow across the five services | done | `scripts/smoke-test.sh`, 74 checks, run against the six real containers on PostgreSQL |
 | Web console and public tracking page | done | 67 automated tests, lint, production build in CI; sign-in, dashboard, deliveries and tracking checked by hand against the real backend |
 | Docker and Compose | done | `compose-smoke` job in CI builds the images and runs the smoke test on PostgreSQL |
+| Frontend container | done | nginx image built and run read-only with the smoke test through it; the smoke test passes against it locally |
 | CI/CD | done | Workflows run on every pull request and on `main` |
 | Kubernetes | manifests done, not deployed | Rendered and schema-checked in CI; no cluster has run them yet |
