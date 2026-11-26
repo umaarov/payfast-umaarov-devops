@@ -6,4 +6,6 @@ description = "Dummy values in test configuration and the environment template"
 paths = [
     '''api-gateway/src/test/resources/application-test\.yml''',
     '''\.env\.example''',
+    '''frontend/src/test/.*''',
+    '''frontend/src/.*\.test\.tsx?''',
 ]

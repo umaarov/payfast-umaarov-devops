@@ -28,3 +28,10 @@ updates:
     labels:
       - "type:chore"
       - "area:devops"
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "type:chore"
+      - "area:devops"

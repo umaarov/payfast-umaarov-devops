@@ -20,6 +20,12 @@
 | GitHub secret scanning and push protection | GitHub settings | to be applied by owner |
 | Dependabot for GitHub Actions | `.github/dependabot.yml` | done |
 | Dependabot for Maven | `.github/dependabot.yml` | done |
+| Dependabot for npm packages of the frontend | `.github/dependabot.yml` | done |
+| `npm audit` for high-severity production dependency issues on every pull request | CI job `frontend` | done |
+| API key kept in `sessionStorage` of the tab only, removed on sign-out, on a 401, and when the tab closes | frontend | done |
+| Public tracking page never sends the API key | frontend | done |
+| No user input rendered as HTML, no inline scripts in the page | frontend | done |
+| Strict content security policy and security headers on the frontend container | frontend container | planned, with the container image |
 | API key required at the gateway, fail-closed at startup, constant-time compare, key never forwarded or logged | api-gateway | done |
 | `/internal/**` not routed by the gateway; path traversal and encoded-slash tricks rejected | api-gateway | done |
 | Request size limit, secure response headers, request id on every response | api-gateway | done |

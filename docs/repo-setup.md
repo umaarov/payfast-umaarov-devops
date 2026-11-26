@@ -22,7 +22,7 @@ Settings, Branches, Add branch ruleset (or classic rule) for `main`:
 
 - Require a pull request before merging; required approvals 0 (see ADR-006).
 - Require conversation resolution before merging.
-- Require status checks to pass and select `build`, `secret-scan`, `kubernetes-manifests` and `compose-smoke` from the CI workflow. They appear in the list only after the workflow has run once.
+- Require status checks to pass and select `build`, `frontend`, `secret-scan`, `kubernetes-manifests` and `compose-smoke` from the CI workflow. They appear in the list only after the workflow has run once.
 - Require linear history.
 - Block force pushes.
 - Restrict deletions.

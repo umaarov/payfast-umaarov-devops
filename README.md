@@ -19,6 +19,7 @@ Repository: `payfast-umaarov-devops`
 - Java 21, Spring Boot 3.5, Spring Cloud Gateway
 - PostgreSQL with one database per service, Flyway migrations
 - Maven multi-module build
+- React 19, TypeScript, Vite for the web console and the public tracking page
 - Docker, Docker Compose, GitHub Actions, Kubernetes
 
 ## Documentation
@@ -33,6 +34,7 @@ Repository: `payfast-umaarov-devops`
 | [docs/meetings.md](docs/meetings.md) | Sprint plan and stand-up log |
 | [docs/kubernetes.md](docs/kubernetes.md) | Deploying to Kubernetes with Kustomize |
 | [docs/ci-cd.md](docs/ci-cd.md) | Pipelines, required checks, releases |
+| [docs/frontend.md](docs/frontend.md) | Web console and public tracking page: screens, API key handling, running and testing |
 | [docs/docker.md](docs/docker.md) | Running the whole platform with Docker Compose |
 | [docs/testing.md](docs/testing.md) | Test levels, the end-to-end smoke test, how to run it, demo script |
 | [docs/api/gateway.md](docs/api/gateway.md) | api-gateway routes, API key, path guard, limits |
@@ -86,6 +88,18 @@ Each service reads its port from `SERVER_PORT`; defaults are in the Services tab
 
 api-gateway needs `GATEWAY_API_KEYS` (see [docs/api/gateway.md](docs/api/gateway.md)); it refuses to start without it. order-service, warehouse-service, tracking-service and delivery-service need PostgreSQL. To run a single service by hand, follow "Running alone" in [docs/api/order.md](docs/api/order.md), [docs/api/warehouse.md](docs/api/warehouse.md), [docs/api/tracking.md](docs/api/tracking.md) and [docs/api/delivery.md](docs/api/delivery.md). The tests do not need a database server.
 
+### Web interface
+
+With the backend running (Docker or the steps above), in a second terminal:
+
+```
+cd frontend
+npm ci
+npm run dev
+```
+
+Open `http://localhost:5173`. Parcel tracking is public; the staff console asks for the API key from `GATEWAY_API_KEYS`. Details in [docs/frontend.md](docs/frontend.md).
+
 ### Troubleshooting on Windows
 
 If startup or tests fail with `Unable to establish loopback connection`, the JVM cannot create its selector pipe in the temporary directory (seen when that path is a shortened 8.3 name). Point it at a plain ASCII folder once, then restart the terminal and the IDE:
@@ -102,6 +116,7 @@ setx JAVA_TOOL_OPTIONS "-Djdk.net.unixdomain.tmpdir=C:/Users/Public/jtmp"
 | Repository, governance, documentation | done | Reviewed through pull requests |
 | warehouse-service, tracking-service, delivery-service, order-service, api-gateway | done | 220 automated tests in `./mvnw verify` |
 | Whole flow across the five services | done | `scripts/smoke-test.sh`, 53 checks, run against the five real services |
+| Web console and public tracking page | done | 67 automated tests, lint, production build in CI; sign-in, dashboard, deliveries and tracking checked by hand against the real backend |
 | Docker and Compose | done | `compose-smoke` job in CI builds the images and runs the smoke test on PostgreSQL |
 | CI/CD | done | Workflows run on every pull request and on `main` |
 | Kubernetes | manifests done, not deployed | Rendered and schema-checked in CI; no cluster has run them yet |
